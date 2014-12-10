@@ -17,16 +17,21 @@ public abstract class Entity {
 	}
 	
 	// logic to be handled on a tick event
-	// return a string "nochange" if nothing noteworthy occurs
+	// return a string of name of class (lowercase) if nothing noteworthy occurs
 	// otherwise return a string detailing the change
 	public String onTick() {
 		this.age++;
-		return "nochange";
+		return "entity";
 	}
 	
 	// return age of entity
 	public int getAge() {
 		return age;
+	}
+	
+	// return location of entity
+	public Point getLocation() {
+		return location;
 	}
 	
 	// returns representation of the entity

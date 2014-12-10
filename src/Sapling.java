@@ -11,15 +11,15 @@ public class Sapling extends Entity {
 	}
 	
 	@Override
-	// return "nochange" by default
-	// return "tree" when age hits 12
+	// return "sapling" by default
+	// return "saplingtotree" when age hits 12
 	public String onTick() {
 		super.onTick();
 		
 		if (age == 12) {
-			return "tree";
+			return "saplingtotree";
 		}
-		return "nochange";
+		return "sapling";
 	}
 
 	@Override

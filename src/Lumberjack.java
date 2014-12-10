@@ -11,14 +11,14 @@ public class Lumberjack extends MovingEntity {
 	}
 	
 	@Override
-	// return "nochange" by default
-	// return "treefound" when lumberjack encounters a tree
+	// return "lumberjack" by default
+	// return "lumberjackfoundtree" when lumberjack encounters a tree
 	public String onTick() {
 		super.onTick();
 		move();
 		move();
 		move();
-		return "nochange";
+		return "lumberjack";
 	}
 	
 	@Override

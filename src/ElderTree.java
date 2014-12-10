@@ -15,15 +15,14 @@ public class ElderTree extends Tree {
 	
 	// constructor with age argument
 	public ElderTree(Point location, int age) {
-		super(location);
-		this.age = age;
+		super(location, age);
 	}
 	
 	@Override
-	// return "nochange" always
+	// return "eldertree" always
 	public String onTick() {
 		age++;
-		return "nochange";
+		return "eldertree";
 	}
 
 	@Override
@@ -31,8 +30,14 @@ public class ElderTree extends Tree {
 		return representation;
 	}
 	
+	@Override
+	public double getSaplingSpawnRate() {
+		return saplingSpawnRate;
+	}
+	
 	public int getLumberYield() {
 		return lumberYield;
 	}
+	
 
 }

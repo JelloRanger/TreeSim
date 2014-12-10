@@ -11,8 +11,8 @@ public class Bear extends MovingEntity {
 	}
 
 	@Override
-	// return "nochange" by default
-	// return "lumberjackfound" when bear finds a lumberjack
+	// return "bear" by default
+	// return "bearfoundlumberjack" when bear finds a lumberjack
 	public String onTick() {
 		super.onTick();
 		move();
@@ -20,7 +20,7 @@ public class Bear extends MovingEntity {
 		move();
 		move();
 		move();
-		return "nochange";
+		return "bear";
 	}
 	
 	@Override

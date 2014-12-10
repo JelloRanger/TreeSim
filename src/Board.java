@@ -12,7 +12,7 @@ public class Board {
 	private int size; // size of board (n x n)
 	private int age; // number of ticks for the board
 	private Entity[][] entities; // two dimensional list of all entities on the board
-	private double spotsRemaining; // amount of board filled by entities
+	private double spotsRemaining; // amount of board unfilled by entities
 	
 	// representation for empty space
 	private final String emptyRepresentation = " ";
@@ -22,6 +22,13 @@ public class Board {
 		this.age = 0;
 		this.entities = new Entity[size][size];
 		this.spotsRemaining = size * size;
+		
+		// populate board with EmptyEntities
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				entities[i][j] = new EmptyEntity(new Point(i,j));
+			}
+		}
 	}
 	
 	// populate the board with Trees
@@ -33,7 +40,7 @@ public class Board {
 			for (int j = 0; j < size; j++) {
 				 
 				// make sure space is empty
-				if (entities[i][j] == null) {
+				if (entities[i][j].getRepresentation().equals(" ")) {
 					positions.add(new Point(i,j));
 				}
 			}
@@ -63,7 +70,7 @@ public class Board {
 			for (int j = 0; j < size; j++) {
 				 
 				// make sure space is empty
-				if (entities[i][j] == null) {
+				if (entities[i][j].getRepresentation().equals(" ")) {
 					positions.add(new Point(i,j));
 				}
 			}
@@ -93,7 +100,7 @@ public class Board {
 			for (int j = 0; j < size; j++) {
 				 
 				// make sure space is empty
-				if (entities[i][j] == null) {
+				if (entities[i][j].getRepresentation().equals(" ")) {
 					positions.add(new Point(i,j));
 				}
 			}
@@ -179,18 +186,46 @@ public class Board {
 					
 					// check for event occurring
 					String event = entities[i][j].onTick();
-					if (!event.equals("nochange")) {
 						
-						// tree grows into an elder tree
-						if (event.equals("eldertree")) {
-							entities[i][j] = new ElderTree(new Point(i,j), entities[i][j].getAge());
-						}
+					// tree grows into an elder tree
+					if (event.equals("treetoeldertree")) {
+						entities[i][j] = new ElderTree(new Point(i,j), entities[i][j].getAge());
+					}
+					
+					// sapling grows into a tree
+					else if (event.equals("saplingtotree")) {
+						entities[i][j] = new Tree(new Point(i,j), entities[i][j].getAge());
+					}
+					
+					// entity is a tree (saplingtotree event included, because it is now a tree)
+					if (event.equals("tree") || event.equals("saplingtotree") || event.equals("eldertree") || event.equals("treetoeldertree")) {
 						
-						// sapling grows into a tree
-						else if (event.equals("tree")) {
-							entities[i][j] = new Tree(new Point(i,j), entities[i][j].getAge());
+						// check if tree has a chance to spawn a sapling
+						if (Math.random() <= ((Tree) entities[i][j]).getSaplingSpawnRate()) {
+							
+							// find a random empty location from adjacent spots
+							ArrayList<Entity> adjSpots = getAdjacentEntities(new Point(i,j));
+							Collections.shuffle(adjSpots); // shuffle list of adjacent spots
+							
+							// pick first spot in list that's empty, and create a sapling there
+							// break when this occurs (only one sapling per tree when spawn event occurs)
+							for (int b = 0; b < adjSpots.size(); b++) {
+								
+								// if empty, spawn a sapling there
+								if (adjSpots.get(b).getRepresentation().equals(" ")) {
+									entities[adjSpots.get(b).getLocation().x][adjSpots.get(b).getLocation().y] = new Sapling(adjSpots.get(b).getLocation());
+									break; // break, sapling has been created
+								}
+							}
 						}
 					}
+					
+					// entity is an elder tree (treetoeldertree event included, because it is now an elder tree)
+					/*else if (event.equals("eldertree") || event.equals("treetoeldertree")) {
+						if (Math.random() <= ((Tree) entities[i][j]).getSaplingSpawnRate()) {
+							
+						}
+					}*/
 					
 				}
 			}

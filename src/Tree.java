@@ -8,18 +8,21 @@ public class Tree extends Entity {
 
 	protected final double saplingSpawnRate = 0.1; // chance tree can spawn a sapling
 	protected final int lumberYield = 1; // amount of lumber a tree generates when cut
+	protected int startAge;
 	
 	protected final String representation = "^";
 	
 	// constructor
 	public Tree(Point location) {
 		super(location);
+		startAge = 0;
 	}
 	
 	// constructor with age argument
 	public Tree(Point location, int age) {
 		super(location);
 		this.age = age;
+		this.startAge = age;
 	}
 
 	@Override
@@ -28,10 +31,10 @@ public class Tree extends Entity {
 	public String onTick() {
 		super.onTick();
 		
-		if (this.age == 12) {
-			return "eldertree";
+		if (age - startAge == 12) {
+			return "treetoeldertree";
 		}
-		return "nochange";
+		return "tree";
 	}
 
 	@Override
@@ -41,6 +44,10 @@ public class Tree extends Entity {
 	
 	public int getLumberYield() {
 		return lumberYield;
+	}
+	
+	public double getSaplingSpawnRate() {
+		return saplingSpawnRate;
 	}
 	
 }
