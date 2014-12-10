@@ -4,27 +4,31 @@ import java.util.ArrayList;
 /*
  * Represents an entity in the simulation
  */
-public class Entity {
+public abstract class Entity {
 	
-	private Point location; // location of entity
-	private ArrayList<Entity> adjEntities; // list of adjacent entities (diagonal included)
-	private int age; // age of entity
-	private static final String representation = "^";
+	protected Point location; // location of entity
+	protected int age; // age of entity
+	protected final String representation = "E";
 	
 	// constructor
 	public Entity(Point location) {
 		this.location = location;
-		this.adjEntities = new ArrayList<Entity>();
 		this.age = 0;
 	}
 	
 	// logic to be handled on a tick event
-	public void onTick() {
+	// return a string "nochange" if nothing noteworthy occurs
+	// otherwise return a string detailing the change
+	public String onTick() {
 		this.age++;
+		return "nochange";
+	}
+	
+	// return age of entity
+	public int getAge() {
+		return age;
 	}
 	
 	// returns representation of the entity
-	public String getRepresentation() {
-		return representation;
-	}
+	public abstract String getRepresentation();
 }
