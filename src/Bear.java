@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public class Bear extends MovingEntity {
 
-	private int lumberjacksEaten;
+	protected int lumberjacksEaten;
 	
 	private final String representation = "B";
 	
@@ -20,15 +20,7 @@ public class Bear extends MovingEntity {
 	// return "bearfoundlumberjack" when bear finds a lumberjack
 	public String onTick(Board board) {
 		super.onTick(board);
-		
-		// move multiple times per tick
-		for (int i = 0; i < numMoves; i++) {
-			
-			// if lumberjack is eaten, stop moving for the month
-			if (!move(board)) {
-				break;
-			}
-		}
+
 		return "bear";
 	}
 	

@@ -7,7 +7,7 @@ public class Lumberjack extends MovingEntity {
 
 	private final String representation = "L";
 	
-	private int lumberCollected;
+	protected int lumberCollected;
 	
 	public Lumberjack(Point location, int boardAge) {
 		super(location, boardAge);
@@ -20,15 +20,6 @@ public class Lumberjack extends MovingEntity {
 	// return "lumberjackfoundtree" when lumberjack encounters a tree
 	public String onTick(Board board) {
 		super.onTick(board);
-		
-		/*// move multiple times per tick
-		for (int i = 0; i < numMoves; i++) {
-			
-			// if tree is cut, stop moving for the month
-			if (!move(board)) {
-				break;
-			}
-		}*/
 		
 		return "lumberjack";
 	}
