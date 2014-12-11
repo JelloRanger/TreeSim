@@ -10,6 +10,8 @@ public class Tree extends Entity {
 	protected final int lumberYield = 1; // amount of lumber a tree generates when cut
 	protected int startAge;
 	
+	protected final int ageToBecomeElderTree = 120;
+	
 	protected final String representation = "^";
 	
 	// constructor
@@ -28,10 +30,10 @@ public class Tree extends Entity {
 	@Override
 	// return "nochange" by default
 	// return "eldertree" when tree age hits 12
-	public String onTick() {
-		super.onTick();
+	public String onTick(Board board) {
+		super.onTick(board);
 		
-		if (age - startAge == 12) {
+		if (age - startAge == ageToBecomeElderTree) {
 			return "treetoeldertree";
 		}
 		return "tree";

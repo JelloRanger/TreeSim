@@ -83,7 +83,7 @@ public class Board {
 		
 		// populate board with lumberjacks (according to initial tree pop rate)
 		while (count < rate * size * size && spotsRemaining > 0) {
-			entities[positions.get(count).x][positions.get(count).y] = new Lumberjack(new Point(positions.get(count).x, positions.get(count).y));
+			entities[positions.get(count).x][positions.get(count).y] = new Lumberjack(new Point(positions.get(count).x, positions.get(count).y), age);
 			count++;
 			spotsRemaining--;
 		}
@@ -113,7 +113,7 @@ public class Board {
 		
 		// populate board with lumberjacks (according to initial tree pop rate)
 		while (count < rate * size * size && spotsRemaining > 0) {
-			entities[positions.get(count).x][positions.get(count).y] = new Bear(new Point(positions.get(count).x, positions.get(count).y));
+			entities[positions.get(count).x][positions.get(count).y] = new Bear(new Point(positions.get(count).x, positions.get(count).y), age);
 			count++;
 			spotsRemaining--;
 		}
@@ -174,6 +174,26 @@ public class Board {
 		return adjEntities;
 	}
 	
+	
+	// move a moving entity to a given point and replace its old position with EmptyEntity
+	// return false if out of bounds
+	public boolean moveEntity(MovingEntity me, Point p) {
+		
+		// boundary check
+		if (p.x >= size || p.y >= size || p.x < 0 || p.y < 0) {
+			return false;
+		}
+		
+		// replace old entity location with EmptyEntity
+		entities[me.getLocation().x][me.getLocation().y] = new EmptyEntity(me.getLocation());
+		
+		// move entity
+		entities[p.x][p.y] = me;
+		me.setLocation(p);
+		
+		return true;
+	}
+	
 	// tick all the entities in the board
 	public void tick() {
 		
@@ -184,8 +204,13 @@ public class Board {
 			for (int j = 0; j < size; j++) {
 				if (entities[i][j] != null) {
 					
+					String event = "";
+					
 					// check for event occurring
-					String event = entities[i][j].onTick();
+					// (only tick entity if it's non-moving or hasn't moved this cycle yet)
+					if (entities[i][j].canMove(age)) {
+						event = entities[i][j].onTick(this);
+					}
 						
 					// tree grows into an elder tree
 					if (event.equals("treetoeldertree")) {
@@ -203,33 +228,41 @@ public class Board {
 						// check if tree has a chance to spawn a sapling
 						if (Math.random() <= ((Tree) entities[i][j]).getSaplingSpawnRate()) {
 							
-							// find a random empty location from adjacent spots
-							ArrayList<Entity> adjSpots = getAdjacentEntities(new Point(i,j));
-							Collections.shuffle(adjSpots); // shuffle list of adjacent spots
 							
-							// pick first spot in list that's empty, and create a sapling there
-							// break when this occurs (only one sapling per tree when spawn event occurs)
-							for (int b = 0; b < adjSpots.size(); b++) {
-								
-								// if empty, spawn a sapling there
-								if (adjSpots.get(b).getRepresentation().equals(" ")) {
-									entities[adjSpots.get(b).getLocation().x][adjSpots.get(b).getLocation().y] = new Sapling(adjSpots.get(b).getLocation());
-									break; // break, sapling has been created
-								}
-							}
+							saplingSpawnEvent(i,j);
 						}
 					}
-					
-					// entity is an elder tree (treetoeldertree event included, because it is now an elder tree)
-					/*else if (event.equals("eldertree") || event.equals("treetoeldertree")) {
-						if (Math.random() <= ((Tree) entities[i][j]).getSaplingSpawnRate()) {
-							
-						}
-					}*/
-					
 				}
 			}
 		}
+	}
+	
+	public void saplingSpawnEvent(int i, int j) {
+		// find a random empty location from adjacent spots
+		ArrayList<Entity> adjSpots = getAdjacentEntities(new Point(i,j));
+		Collections.shuffle(adjSpots); // shuffle list of adjacent spots
+		
+		// pick first spot in list that's empty, and create a sapling there
+		// break when this occurs (only one sapling per tree when spawn event occurs)
+		for (int b = 0; b < adjSpots.size(); b++) {
+			
+			// if empty, spawn a sapling there
+			if (adjSpots.get(b).getRepresentation().equals(" ")) {
+				entities[adjSpots.get(b).getLocation().x][adjSpots.get(b).getLocation().y] = new Sapling(adjSpots.get(b).getLocation());
+				break; // break, sapling has been created
+			}
+		}
+	}
+	
+	// return entity at given point
+	public Entity getEntity(Point p) {
+		
+		// boundary check
+		if (p.x >= size || p.y >= size || p.x < 0 || p.y < 0) {
+			return null;
+		}
+		
+		return entities[p.x][p.y];
 	}
 	
 	// return dimensions of board

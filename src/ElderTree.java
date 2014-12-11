@@ -20,7 +20,7 @@ public class ElderTree extends Tree {
 	
 	@Override
 	// return "eldertree" always
-	public String onTick() {
+	public String onTick(Board board) {
 		age++;
 		return "eldertree";
 	}

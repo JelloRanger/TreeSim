@@ -3,6 +3,8 @@ import java.awt.Point;
 
 public class Sapling extends Entity {
 
+	private final int ageToBecomeTree = 12;
+	
 	private final String representation = ".";
 	
 	// constructor
@@ -13,10 +15,10 @@ public class Sapling extends Entity {
 	@Override
 	// return "sapling" by default
 	// return "saplingtotree" when age hits 12
-	public String onTick() {
-		super.onTick();
+	public String onTick(Board board) {
+		super.onTick(board);
 		
-		if (age == 12) {
+		if (age == ageToBecomeTree) {
 			return "saplingtotree";
 		}
 		return "sapling";
