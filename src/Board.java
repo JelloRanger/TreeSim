@@ -14,6 +14,8 @@ public class Board {
 	private Entity[][] entities; // two dimensional list of all entities on the board
 	private double spotsRemaining; // amount of board unfilled by entities
 	
+	private int lumberCollectedThisYear;
+	
 	// representation for empty space
 	private final String emptyRepresentation = " ";
 	
@@ -22,6 +24,7 @@ public class Board {
 		this.age = 0;
 		this.entities = new Entity[size][size];
 		this.spotsRemaining = size * size;
+		this.lumberCollectedThisYear = 0;
 		
 		// populate board with EmptyEntities
 		for (int i = 0; i < size; i++) {
@@ -128,6 +131,9 @@ public class Board {
 		
 		buffer.append("Month " + age + ":\n"); // display age of simulation 
 		
+		buffer.append(getNumLumberjacks() + "\n");
+		buffer.append(lumberCollectedThisYear + "\n");
+		
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				
@@ -187,6 +193,12 @@ public class Board {
 		// replace old entity location with EmptyEntity
 		entities[me.getLocation().x][me.getLocation().y] = new EmptyEntity(me.getLocation());
 		
+		// check if we have an additional empty space
+		// (other entity aside from EmptyEntity was 'eaten')
+		if (!entities[p.x][p.y].getRepresentation().equals(" ")) {
+			spotsRemaining++; // increment spotsRemaining, as we now have a new empty space
+		}
+		
 		// move entity
 		entities[p.x][p.y] = me;
 		me.setLocation(p);
@@ -235,6 +247,19 @@ public class Board {
 				}
 			}
 		}
+		
+		// handle logic that occurs every year
+		if (age % 12 == 0) {
+			
+			// if more lumber was collected compared to number of lumberjacks, hire more
+			int numLumberjacks = getNumLumberjacks();
+			if (lumberCollectedThisYear >= numLumberjacks) {
+				populateLumberjacks(Math.ceil((lumberCollectedThisYear - numLumberjacks) / 10.0) * (1.0 / (double) (size*size)) );
+			}
+			
+			
+			lumberCollectedThisYear = 0;// clear lumber collected per year
+		}
 	}
 	
 	public void saplingSpawnEvent(int i, int j) {
@@ -249,6 +274,7 @@ public class Board {
 			// if empty, spawn a sapling there
 			if (adjSpots.get(b).getRepresentation().equals(" ")) {
 				entities[adjSpots.get(b).getLocation().x][adjSpots.get(b).getLocation().y] = new Sapling(adjSpots.get(b).getLocation());
+				spotsRemaining--;
 				break; // break, sapling has been created
 			}
 		}
@@ -263,6 +289,29 @@ public class Board {
 		}
 		
 		return entities[p.x][p.y];
+	}
+	
+	// return number of Lumberjack entities on the board
+	public int getNumLumberjacks() {
+		
+		// store result here
+		int result = 0;
+		
+		// iterate through board counting lumberjacks
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (entities[i][j].getRepresentation().equals("L")) {
+					result++;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	// increment lumber collected
+	public void addLumberCollected(int amount) {
+		lumberCollectedThisYear += amount;
 	}
 	
 	// return dimensions of board

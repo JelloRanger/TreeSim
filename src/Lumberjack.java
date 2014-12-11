@@ -50,6 +50,9 @@ public class Lumberjack extends MovingEntity {
 				// collect lumber
 				lumberCollected += ((Tree) nextSpot).getLumberYield();
 				
+				// tell board how much lumber we collected
+				board.addLumberCollected(((Tree) nextSpot).getLumberYield());
+				
 				// move there
 				board.moveEntity(this, nextSpot.getLocation());
 				return false; // stop moving
