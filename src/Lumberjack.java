@@ -21,14 +21,14 @@ public class Lumberjack extends MovingEntity {
 	public String onTick(Board board) {
 		super.onTick(board);
 		
-		// move multiple times per tick
+		/*// move multiple times per tick
 		for (int i = 0; i < numMoves; i++) {
 			
 			// if tree is cut, stop moving for the month
 			if (!move(board)) {
 				break;
 			}
-		}
+		}*/
 		
 		return "lumberjack";
 	}
@@ -43,7 +43,7 @@ public class Lumberjack extends MovingEntity {
 		Collections.shuffle(adjSpots); // shuffle adj list to simulate randomness
 		
 		// select first open slot to move to
-		// (can't move to sapling, bear, or other lumberjack spots
+		// (can't move to sapling, bear, or other lumberjack spots)
 		for (int i = 0; i < adjSpots.size(); i++) {
 			Entity nextSpot = adjSpots.get(i);
 			

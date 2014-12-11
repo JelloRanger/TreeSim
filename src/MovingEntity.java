@@ -22,6 +22,16 @@ public abstract class MovingEntity extends Entity {
 	public String onTick(Board board) {
 		super.onTick(board);
 		monthMoved += 1;
+		
+		// move multiple times per tick
+		for (int i = 0; i < numMoves; i++) {
+			
+			// if tree is cut, stop moving for the month
+			if (!move(board)) {
+				break;
+			}
+		}
+		
 		return "movingentity";
 	}
 	
