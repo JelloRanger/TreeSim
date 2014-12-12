@@ -15,6 +15,7 @@ public class Board {
 	private double spotsRemaining; // amount of board unfilled by entities
 	
 	private int lumberCollectedThisYear;
+	private int lumberjacksEatenThisYear;
 	
 	// representation for empty space
 	private final String emptyRepresentation = " ";
@@ -25,6 +26,7 @@ public class Board {
 		this.entities = new Entity[size][size];
 		this.spotsRemaining = size * size;
 		this.lumberCollectedThisYear = 0;
+		this.lumberjacksEatenThisYear = 0;
 		
 		// populate board with EmptyEntities
 		for (int i = 0; i < size; i++) {
@@ -247,26 +249,50 @@ public class Board {
 		
 		// handle logic that occurs every year
 		if (age % 12 == 0) {
-			
-			// if more lumber was collected compared to number of lumberjacks, hire more
-			ArrayList<Entity> lumberjacks = getLumberjacks();
-			int numLumberjacks = lumberjacks.size();
-			if (lumberCollectedThisYear >= numLumberjacks) {
-				populateLumberjacks(Math.ceil((lumberCollectedThisYear - numLumberjacks) / 10.0) * (1.0 / (double) (size*size)) );
-			}
-			
-			// remove a random lumberjack if less lumber was collected compared to # of lumberjacks
-			// (never reduce to 0 though)
-			else if (numLumberjacks > 1) {
-				
-				// remove 1 random lumberjack
-				Collections.shuffle(lumberjacks); // shuffle list to get randomness
-				entities[lumberjacks.get(0).getLocation().x][lumberjacks.get(0).getLocation().y] = new EmptyEntity(lumberjacks.get(0).getLocation());
-				spotsRemaining++; // one more spot is now available
-			}
-			
-			lumberCollectedThisYear = 0;// clear lumber collected per year
+			yearTick();
 		}
+	}
+	
+	
+	// logic that occurs once per year
+	public void yearTick() {
+		
+		// if more lumber was collected compared to number of lumberjacks, hire more
+		ArrayList<Entity> lumberjacks = getLumberjacks();
+		int numLumberjacks = lumberjacks.size();
+		if (lumberCollectedThisYear >= numLumberjacks) {
+			populateLumberjacks(Math.ceil((lumberCollectedThisYear - numLumberjacks) / 10.0) * (1.0 / (double) (size*size)) );
+		}
+		
+		// remove a random lumberjack if less lumber was collected compared to # of lumberjacks
+		// (never reduce to 0 though)
+		else if (numLumberjacks > 1) {
+			
+			// remove 1 random lumberjack
+			Collections.shuffle(lumberjacks); // shuffle list to achieve randomness
+			entities[lumberjacks.get(0).getLocation().x][lumberjacks.get(0).getLocation().y] = new EmptyEntity(lumberjacks.get(0).getLocation());
+			spotsRemaining++; // one more spot is now available
+		}
+		
+		// if any lumberjacks were eaten this year, remove 1 bear
+		if (lumberjacksEatenThisYear > 0) {
+			
+			// remove 1 random bear
+			ArrayList<Entity> bears = getBears();
+			Collections.shuffle(bears); // shuffle list to achieve randomness
+			entities[bears.get(0).getLocation().x][bears.get(0).getLocation().y] = new EmptyEntity(bears.get(0).getLocation());
+			spotsRemaining++; // one more spot is now available
+		}
+		
+		// otherwise increase bear population
+		else {
+			
+			// add 1 random bear
+			populateBears(1.0 / (double) (size*size));
+		}
+		
+		lumberCollectedThisYear = 0; // clear lumber collected per year
+		lumberjacksEatenThisYear = 0; // clear lumberjack deaths this year
 	}
 	
 	public void saplingSpawnEvent(int i, int j) {
@@ -316,9 +342,32 @@ public class Board {
 		return result;
 	}
 	
+	// return list of Bear entities on the board
+	public ArrayList<Entity> getBears() {
+		
+		// store result here
+		ArrayList<Entity> result = new ArrayList<Entity>();
+		
+		// iterate through board counting bears
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (entities[i][j].getRepresentation().equals("B")) {
+					result.add(entities[i][j]);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	// increment lumber collected
 	public void addLumberCollected(int amount) {
 		lumberCollectedThisYear += amount;
+	}
+	
+	// increment lumberjacks eaten
+	public void incLumberjacksEaten() {
+		lumberjacksEatenThisYear++;
 	}
 	
 	// return dimensions of board

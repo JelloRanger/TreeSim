@@ -49,6 +49,7 @@ public class Bear extends MovingEntity {
 				
 				// increment lumberjacks eaten
 				lumberjacksEaten++;
+				board.incLumberjacksEaten();
 				
 				// move there
 				board.moveEntity(this, nextSpot.getLocation());
