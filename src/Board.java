@@ -131,9 +131,6 @@ public class Board {
 		
 		buffer.append("Month " + age + ":\n"); // display age of simulation 
 		
-		buffer.append(getNumLumberjacks() + "\n");
-		buffer.append(lumberCollectedThisYear + "\n");
-		
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				
@@ -252,11 +249,21 @@ public class Board {
 		if (age % 12 == 0) {
 			
 			// if more lumber was collected compared to number of lumberjacks, hire more
-			int numLumberjacks = getNumLumberjacks();
+			ArrayList<Entity> lumberjacks = getLumberjacks();
+			int numLumberjacks = lumberjacks.size();
 			if (lumberCollectedThisYear >= numLumberjacks) {
 				populateLumberjacks(Math.ceil((lumberCollectedThisYear - numLumberjacks) / 10.0) * (1.0 / (double) (size*size)) );
 			}
 			
+			// remove a random lumberjack if less lumber was collected compared to # of lumberjacks
+			// (never reduce to 0 though)
+			else if (numLumberjacks > 1) {
+				
+				// remove 1 random lumberjack
+				Collections.shuffle(lumberjacks); // shuffle list to get randomness
+				entities[lumberjacks.get(0).getLocation().x][lumberjacks.get(0).getLocation().y] = new EmptyEntity(lumberjacks.get(0).getLocation());
+				spotsRemaining++; // one more spot is now available
+			}
 			
 			lumberCollectedThisYear = 0;// clear lumber collected per year
 		}
@@ -291,17 +298,17 @@ public class Board {
 		return entities[p.x][p.y];
 	}
 	
-	// return number of Lumberjack entities on the board
-	public int getNumLumberjacks() {
+	// return list of Lumberjack entities on the board
+	public ArrayList<Entity> getLumberjacks() {
 		
 		// store result here
-		int result = 0;
+		ArrayList<Entity> result = new ArrayList<Entity>();
 		
 		// iterate through board counting lumberjacks
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (entities[i][j].getRepresentation().equals("L")) {
-					result++;
+					result.add(entities[i][j]);
 				}
 			}
 		}
