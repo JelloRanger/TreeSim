@@ -375,4 +375,9 @@ public class Board {
 		return this.size;
 	}
 	
+	// return age of board
+	public int getAge() {
+		return this.age;
+	}
+	
 }
