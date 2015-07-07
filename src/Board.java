@@ -264,18 +264,19 @@ public class Board {
 			populateLumberjacks(Math.ceil((lumberCollectedThisYear - numLumberjacks) / 10.0) * (1.0 / (double) (size*size)) );
 		}
 		
-		// remove a random lumberjack if less lumber was collected compared to # of lumberjacks
+		// remove lumberjacks if less lumber was collected compared to # of lumberjacks
 		// (never reduce to 0 though)
 		else if (numLumberjacks > 1) {
 			
-			// remove 1 random lumberjack
-			Collections.shuffle(lumberjacks); // shuffle list to achieve randomness
-			entities[lumberjacks.get(0).getLocation().x][lumberjacks.get(0).getLocation().y] = new EmptyEntity(lumberjacks.get(0).getLocation());
-			spotsRemaining++; // one more spot is now available
+			Collections.shuffle(lumberjacks);
+			for (int i = 0; i < numLumberjacks - lumberCollectedThisYear; i++) {
+				entities[lumberjacks.get(i).getLocation().x][lumberjacks.get(i).getLocation().y] = new EmptyEntity(lumberjacks.get(i).getLocation());
+			}
+			spotsRemaining += numLumberjacks - lumberCollectedThisYear;
 		}
 		
-		// if any lumberjacks were eaten this year, remove 1 bear
-		if (lumberjacksEatenThisYear > 0) {
+		// if any lumberjacks were eaten this year, remove bears
+		if (lumberjacksEatenThisYear > size / 10) {
 			
 			// remove 1 random bear
 			ArrayList<Entity> bears = getBears();
